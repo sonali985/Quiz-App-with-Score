@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz App</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .quiz-box {
+      background: white;
+      padding: 20px;
+      width: 400px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .option-btn {
+      display: block;
+      margin: 8px 0;
+      padding: 8px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .correct {
+      background-color: lightgreen;
+    }
+
+    .wrong {
+      background-color: lightcoral;
+    }
+
+    #nextBtn {
+      margin-top: 10px;
+      padding: 8px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-box">
+  <h2 id="question"></h2>
+  <div id="options"></div>
+  <button id="nextBtn">Next</button>
+  <h3 id="score"></h3>
+</div>
+
+<script>
+
+const quizData = [
+  {
+    question: "Which language runs in a web browser?",
+    options: ["Java", "C", "Python", "JavaScript"],
+    correct: 3
+  },
+  {
+    question: "Which language is mainly used for data science?",
+    options: ["Python", "HTML", "CSS", "C"],
+    correct: 0
+  },
+  {
+    question: "Which is a C programming feature?",
+    options: ["Pointers", "Tags", "Styling", "React Components"],
+    correct: 0
+  }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let selectedAnswer = null;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+const scoreEl = document.getElementById("score");
+
+function loadQuestion() {
+  selectedAnswer = null;
+  questionEl.textContent = quizData[currentQuestion].question;
+  optionsEl.innerHTML = "";
+
+  quizData[currentQuestion].options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.textContent = option;
+    button.classList.add("option-btn");
+
+    button.addEventListener("click", function() {
+      selectAnswer(index, button);
+    });
+
+    optionsEl.appendChild(button);
+  });
+}
+
+function selectAnswer(index, button) {
+  if (selectedAnswer !== null) return; // prevent multiple clicks
+
+  selectedAnswer = index;
+
+  const correctIndex = quizData[currentQuestion].correct;
+
+  const buttons = document.querySelectorAll(".option-btn");
+
+  buttons.forEach((btn, i) => {
+    if (i === correctIndex) {
+      btn.classList.add("correct");
+    } else if (i === selectedAnswer) {
+      btn.classList.add("wrong");
+    }
+  });
+
+  if (selectedAnswer === correctIndex) {
+    score++;
+  }
+}
+
+nextBtn.addEventListener("click", function() {
+  if (selectedAnswer === null) {
+    alert("Please select an answer first!");
+    return;
+  }
+
+  currentQuestion++;
+
+  if (currentQuestion < quizData.length) {
+    loadQuestion();
+  } else {
+    showScore();
+  }
+});
+
+function showScore() {
+  questionEl.textContent = "Quiz Completed!";
+  optionsEl.innerHTML = "";
+  nextBtn.style.display = "none";
+  scoreEl.textContent = "Your Score: " + score + " / " + quizData.length;
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
